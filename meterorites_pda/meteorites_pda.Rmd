@@ -1,0 +1,116 @@
+---
+title: "Meteorites PDA"
+output: html_notebook
+---
+
+```{r}
+#Loading the neccessary apps
+
+library(tidyverse)
+library(maps)
+
+
+#Reading in the cleaned data
+meteorite_data <- read_csv("meteorite_project.csv")
+
+
+```
+
+
+```{r}
+#Creating a map showing the location of the 10 largest meteorites
+earth_map <- map_data("world")
+meteorite_data %>% 
+  #removing missing values
+  drop_na() %>% 
+  #filtering by the top ten largest meteorites
+  slice_max(mass_g, n=10) %>% 
+  arrange() %>% 
+  #creating map
+  ggplot() +
+  geom_polygon(data = earth_map, aes(x = long, y = lat, group = group),
+               fill = "dark green", alpha = 0.5) +
+  geom_point(aes(x = longitude, y = latitude)) +
+  coord_cartesian() +
+  labs(
+    #changing main title, and axis labels
+    title = "Location of the 10 Largest Meteorites",
+    x = "Longitude",
+    y = "Latitude"
+  )
+
+```
+
+```{r}
+#Creating a plot showing the names and mass of the ten largest meteorites by fall 
+meteorite_data %>%
+  select(name, mass_g, fall) %>% 
+  arrange(desc(mass_g))  %>% 
+  slice_max(order_by = mass_g, n=10) %>% 
+  ggplot() +
+  aes(x = reorder(name, -mass_g), y = mass_g, fill = fall) +
+  geom_col() +
+  theme_light() +
+  scale_y_continuous(label = scales::comma) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(
+    title = "Mass of the 10 Largest Meteorites",
+    x = "Meteorite Name",
+    y = "Mass (g)",
+    fill = "Fall"
+  ) +
+  #applying colour blind friendly palette
+    scale_fill_brewer(palette = "Dark1")
+```
+
+```{r}
+#Finding the average mass of meteorites that were recorded falling, vs. those which were just found.
+avg_mass_fell <- meteorite_data %>% 
+  group_by(fall) %>% 
+  summarise(average_mass_g = mean(mass_g)) 
+
+  ggplot(avg_mass_fell) +
+  aes(x = fall, y = average_mass_g, fill = fall) +
+  geom_col() +
+  theme_light() +
+  scale_y_continuous(label = scales::comma) +
+    scale_y_continuous(limits = c(0, 150000)) +
+  labs(
+    title = "Average Mass of Meteorites by Fall",
+    x = "Fall",
+    y = "Average Mass (g)",
+    fill = "Fall"
+  ) + 
+    #removing the legend 
+  theme(legend.position="none") +
+     #applying colour blind friendly palette
+    scale_fill_brewer(palette = "Dark1")
+
+
+```
+
+```{r}
+#Showing the number of meteorites in each year, for every year since 2000.
+meteorites_year <- meteorite_data %>% 
+  filter(year >= 2000) %>% 
+  group_by(year) %>% 
+  summarise(meteorite_count = n()) 
+
+  ggplot(meteorites_year) +
+  aes(x = year, y = meteorite_count) +
+    #creating plot and filling green 
+  geom_col(fill = "dark green") +
+    #applying white background in place of grey
+  theme_light() +
+  labs(
+    title = "Number of Meteorites Found each Year",
+    subtitle = "2000 - 2013",
+    x = "Year",
+    y = "Total"
+  ) +
+    #Applying x axis labels (one for each corresponding year)
+    scale_x_continuous(breaks = c(2000:2013)) +
+    #Applying y axis labels
+    scale_y_continuous(limits = c(0, 250))
+```
+
