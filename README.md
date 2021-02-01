@@ -77,16 +77,16 @@ The .Rmd file was created to display information on the following points:
 2. The average mass of meteorites that were recorded falling, vs. those which were just found.
 3. The number of meteorites in each year, for every year since 2000.
 
-###Reading the cleaned meteorite data into R
+### Reading the cleaned meteorite data into R
 `meteorite_project <- 
 read_csv("meteorite_project.csv") %>%`
 
-###Finding the names and years found for the 10 largest meteorites in the data.
+### Finding the names and years found for the 10 largest meteorites in the data.
   `ten_largest <- meteorite_project %>% 
   select(name, mass_g, year) %>% 
   slice_max(mass_g, n = 10)`
 
-###Finding the average mass of meteorites that were recorded falling, vs. those which were just found.
+### Finding the average mass of meteorites that were recorded falling, vs. those which were just found.
 `avg_mass_fell <- meteorite_project %>% 
   group_by(fall) %>% 
   summarise(mass_g = mean(mass_g))`
