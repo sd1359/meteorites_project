@@ -23,7 +23,7 @@ Ensuring that the data has the variable names expected (“id”, “name”, �
 
 `stopifnot(names(meteorite_data_raw) %in% c("id", "name", "mass (g)", "fall", "year", "GeoLocation"))`
 
-###snake_case Format
+### snake_case Format
 I changed the names of the variables to follow the snake_case format by using the clean_names function
 `meteorite_data <- meteorite_data_raw %>% 
   clean_names()`
@@ -51,16 +51,15 @@ summarise(across(.fns = ~sum(is.na(.x))))
   mutate(latitude = coalesce(latitude, 0),
          longitude = coalesce(longitude, 0))`
 
-### Checking if the NA's have been successfully removed in latitude column 
-### meteorite_data 
-  `filter(is.na(latitude))`
+### Checking if the NA's have been successfully removed in latitude column  
+  `meteorite_data %>% filter(is.na(latitude))`
 
 ### Checking if the NA's have been successfully removed in longitude column
   `filter(is.na(longitude))`
 
 ### Removing meteorites less than 1000g in weight from the data, then ordering the data by the year of discovery.
- ` `meteorite_data <- meteorite_data %>% 
-  filter(mass_g >= 1000) %>% `arrange(desc(year)) %>% `
+ `meteorite_data <- meteorite_data %>% 
+  filter(mass_g >= 1000) %>% arrange(desc(year)) %>%`
   
 ### Putting in checks using assertive programming to ensure latitude and longitude are valid values. (Latitude between -90 and 90, longitude between -180 and 180).
 `verify(latitude >= -90 & latitude <= 90) %>% 
